@@ -1098,26 +1098,9 @@ export async function PATCH(req) {
       if (!updatedWithdraw) throw new Error("উইথড্র আপডেট করা যায়নি!");
 
       if (status === "approved") {
-        // ✅ [ফিক্স] অ্যাপ্রুভ করার সময় শুধু কমিশন যোগ হবে, মেইন ব্যালেন্স বাড়বে না
-        const withdrawAmountBDT = calculateRefundAmount(updatedWithdraw);
-        const commissionToAdd = Number(updatedWithdraw.agentCommission) || 0;
-
-        const updatedAgent = await User.findOneAndUpdate(
-          { _id: agentId },
-          {
-            $inc: {
-              // agentMainBalance: withdrawAmountBDT, // 👈 এই লাইনটি বাদ দেওয়া হয়েছে (কারণ রিকোয়েস্টের সময়ই টাকা কাটা হয়ে গেছে)
-              agentCommissionBalance: commissionToAdd, // 👈 শুধু কমিশন বাড়বে
-            },
-          },
-          { returnDocument: "after", session },
-        );
-
-        if (updatedAgent) {
-          newAgentBalance = updatedAgent.agentMainBalance || 0;
-        }
-
-        newUserBalance = oldUserBalance; // ইউজারের ব্যালেন্স অপরিবর্তিত থাকবে
+        // ✅ [ফিক্স] অ্যাপ্রুভ করার সময় কোনো টাকা বা কমিশন বাড়বে না (রিকোয়েস্টের সময়ই হয়ে গেছে)
+        newUserBalance = oldUserBalance;
+        newAgentBalance = oldAgentBalance;
 
         await Withdraw.updateOne(
           { _id: updatedWithdraw._id },
@@ -1125,30 +1108,9 @@ export async function PATCH(req) {
           { session },
         );
 
-        // কমিশন ট্রানজেকশন তৈরি
-        if (commissionToAdd > 0) {
-          await Transaction.create(
-            [
-              {
-                userId: updatedAgent._id,
-                agentId: updatedAgent._id,
-                type: "AGENT_COMMISSION",
-                method: "AGENT_COMMISSION",
-                phone: updatedAgent.agentPhone || updatedAgent.phone || "",
-                amount: commissionToAdd,
-                trxId: "",
-                status: "ACCEPTED",
-                comment: `উইথড্র কমিশন (৳${withdrawAmountBDT} × ${updatedWithdraw.agentCommissionRate}% = ৳${commissionToAdd})`,
-                relatedWithdrawId: updatedWithdraw._id,
-              },
-            ],
-            { session },
-          );
-        }
-
         agentUpdateInfo = {
           addedToMain: 0, // মেইন ব্যালেন্স বাড়েনি
-          commissionAdded: commissionToAdd,
+          commissionAdded: 0, // কমিশনও বাড়েনি (কারণ আগেই পেয়েছে)
         };
       } else if (status === "rejected") {
         // বাতিল হলে ইউজার এবং এজেন্ট উভয়ের টাকা ফেরত দিতে হবে
@@ -1167,7 +1129,7 @@ export async function PATCH(req) {
             refundInfo = { refundAmount };
           }
 
-          // ২. এজেন্টের টাকা ও কমিশন ফেরত
+          // ২. এজেন্টের কাটা টাকা ফেরত এবং কমিশন বাতিল
           const updatedAgent = await User.findOneAndUpdate(
             { _id: agentId },
             {
@@ -1175,7 +1137,7 @@ export async function PATCH(req) {
                 agentMainBalance: refundAmount, // হোল্ড করা টাকা ফেরত
                 agentCommissionBalance: -(
                   Number(updatedWithdraw.agentCommission) || 0
-                ),
+                ), // কমিশন কেটে নেওয়া (বাতিল)
               },
             },
             { returnDocument: "after", session },
