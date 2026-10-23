@@ -6,12 +6,24 @@
 //   const [searchQuery, setSearchQuery] = useState("");
 //   const [loading, setLoading] = useState(true);
 
-//   // মোডাল ও কনফার্মেশন স্টেট
+//   // ডিটেইলস ও এডিট মোডাল স্টেট
 //   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
 //   const [editingUser, setEditingUser] = useState(null);
-//   const [newBalance, setNewBalance] = useState("");
-//   const [newTurnover, setNewTurnover] = useState("");
-//   const [newIp, setNewIp] = useState("");
+
+//   // সমস্ত ফিল্ড এডিট করার জন্য ফর্ম স্টেট
+//   const [editFormData, setEditFormData] = useState({
+//     balance: "",
+//     turnover: "",
+//     ipAddress: "",
+//     role: "user",
+//     vipLevel: "bronze",
+//     referralBalance: "",
+//     agentMainBalance: "",
+//     agentCommissionBalance: "",
+//     agentDepositCommission: "",
+//     agentWithdrawCommission: "",
+//     agentCode: "",
+//   });
 
 //   const [confirmData, setConfirmData] = useState(null);
 //   const [toasts, setToasts] = useState([]);
@@ -170,9 +182,19 @@
 //       confirmClass: "blue",
 //       onYes: () => {
 //         setEditingUser(u.uid);
-//         setNewBalance(u.balance);
-//         setNewTurnover(u.turnover || 0);
-//         setNewIp(u.ipAddress || "");
+//         setEditFormData({
+//           balance: u.balance ?? 0,
+//           turnover: u.turnover ?? 0,
+//           ipAddress: u.ipAddress || "",
+//           role: u.role || "user",
+//           vipLevel: u.vipLevel || "bronze",
+//           referralBalance: u.referralBalance ?? 0,
+//           agentMainBalance: u.agentMainBalance ?? 0,
+//           agentCommissionBalance: u.agentCommissionBalance ?? 0,
+//           agentDepositCommission: u.agentDepositCommission ?? 0,
+//           agentWithdrawCommission: u.agentWithdrawCommission ?? 0,
+//           agentCode: u.agentCode || "",
+//         });
 //       },
 //     });
 //   };
@@ -236,12 +258,12 @@
 //         })}
 //       </div>
 
-//       {/* ইউজার সার্চ ও হেডার */}
+//       {/* সার্চ ও হেডার */}
 //       <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg space-y-3">
 //         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
 //           <div className="flex items-center gap-2">
 //             <h2 className="text-xs font-bold text-slate-200">
-//               📋 ইউজার লিস্ট ও সার্চ
+//               📋 ইউজার লিস্ট ও তথ্য এডিটর
 //             </h2>
 //             <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700">
 //               {users.length} জন
@@ -340,26 +362,36 @@
 //                   >
 //                     সব ডেটা
 //                   </button>
-//                   <button
-//                     onClick={() => handleEditClick(u)}
-//                     className="flex-1 bg-blue-950 text-blue-300 py-1.5 rounded-lg text-[10px] font-medium border border-blue-800 text-center"
-//                   >
-//                     এডিট
-//                   </button>
-//                   <button
-//                     onClick={() =>
-//                       handleUpdateUser(u.uid, { isBlocked: !u.isBlocked })
-//                     }
-//                     className={`flex-1 py-1.5 rounded-lg text-[10px] font-medium border text-center ${u.isBlocked ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-rose-950 text-rose-300 border-rose-800"}`}
-//                   >
-//                     {u.isBlocked ? "আনব্লক" : "ব্লক"}
-//                   </button>
-//                   <button
-//                     onClick={() => handleDeleteUser(u.uid)}
-//                     className="bg-slate-800 text-slate-400 px-3 py-1.5 rounded-lg text-[10px] font-medium border border-slate-700"
-//                   >
-//                     ডিলিট
-//                   </button>
+
+//                   {/* অ্যাডমিন ছাড়া বাকিদের জন্য এডিট, ব্লক এবং ডিলিট চালু থাকবে */}
+//                   {u.role !== "admin" ? (
+//                     <>
+//                       <button
+//                         onClick={() => handleEditClick(u)}
+//                         className="flex-1 bg-blue-950 text-blue-300 py-1.5 rounded-lg text-[10px] font-medium border border-blue-800 text-center"
+//                       >
+//                         এডিট
+//                       </button>
+//                       <button
+//                         onClick={() =>
+//                           handleUpdateUser(u.uid, { isBlocked: !u.isBlocked })
+//                         }
+//                         className={`flex-1 py-1.5 rounded-lg text-[10px] font-medium border text-center ${u.isBlocked ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-rose-950 text-rose-300 border-rose-800"}`}
+//                       >
+//                         {u.isBlocked ? "আনব্লক" : "ব্লক"}
+//                       </button>
+//                       <button
+//                         onClick={() => handleDeleteUser(u.uid)}
+//                         className="bg-slate-800 text-slate-400 px-3 py-1.5 rounded-lg text-[10px] font-medium border border-slate-700"
+//                       >
+//                         ডিলিট
+//                       </button>
+//                     </>
+//                   ) : (
+//                     <span className="text-[10px] bg-slate-900 text-slate-600 px-2.5 py-1.5 rounded-lg border border-slate-800 font-mono">
+//                       সুরক্ষিত অ্যাডমিন
+//                     </span>
+//                   )}
 //                 </div>
 //               </div>
 //             ))
@@ -484,26 +516,38 @@
 //                         >
 //                           সব ডেটা
 //                         </button>
-//                         <button
-//                           onClick={() => handleEditClick(u)}
-//                           className="bg-blue-950 text-blue-300 hover:bg-blue-900 hover:text-white px-2.5 py-1 rounded-lg text-[11px] border border-blue-800"
-//                         >
-//                           এডিট
-//                         </button>
-//                         <button
-//                           onClick={() =>
-//                             handleUpdateUser(u.uid, { isBlocked: !u.isBlocked })
-//                           }
-//                           className={`px-2.5 py-1 rounded-lg text-[11px] border ${u.isBlocked ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-rose-950 text-rose-300 border-rose-800"}`}
-//                         >
-//                           {u.isBlocked ? "আনব্লক" : "ব্লক"}
-//                         </button>
-//                         <button
-//                           onClick={() => handleDeleteUser(u.uid)}
-//                           className="bg-slate-800 text-slate-400 hover:bg-rose-900 hover:text-white px-2.5 py-1 rounded-lg text-[11px] border border-slate-700"
-//                         >
-//                           ডিলিট
-//                         </button>
+
+//                         {/* অ্যাডমিন ছাড়া বাকিদের জন্য এডিট, ব্লক এবং ডিলিট চালু থাকবে */}
+//                         {u.role !== "admin" ? (
+//                           <>
+//                             <button
+//                               onClick={() => handleEditClick(u)}
+//                               className="bg-blue-950 text-blue-300 hover:bg-blue-900 hover:text-white px-2.5 py-1 rounded-lg text-[11px] border border-blue-800"
+//                             >
+//                               এডিট
+//                             </button>
+//                             <button
+//                               onClick={() =>
+//                                 handleUpdateUser(u.uid, {
+//                                   isBlocked: !u.isBlocked,
+//                                 })
+//                               }
+//                               className={`px-2.5 py-1 rounded-lg text-[11px] border ${u.isBlocked ? "bg-emerald-950 text-emerald-300 border-emerald-800" : "bg-rose-950 text-rose-300 border-rose-800"}`}
+//                             >
+//                               {u.isBlocked ? "আনব্লক" : "ব্লক"}
+//                             </button>
+//                             <button
+//                               onClick={() => handleDeleteUser(u.uid)}
+//                               className="bg-slate-800 text-slate-400 hover:bg-rose-900 hover:text-white px-2.5 py-1 rounded-lg text-[11px] border border-slate-700"
+//                             >
+//                               ডিলিট
+//                             </button>
+//                           </>
+//                         ) : (
+//                           <span className="text-[10px] bg-slate-900 text-slate-600 px-2.5 py-1 rounded-lg border border-slate-800 font-mono">
+//                             সুরক্ষিত অ্যাডমিন
+//                           </span>
+//                         )}
 //                       </div>
 //                     </td>
 //                   </tr>
@@ -514,7 +558,7 @@
 //         </div>
 //       </div>
 
-//       {/* ইউজারের কালেকশন ডেটা দেখার মোডাল */}
+//       {/* ইউজারের সমস্ত কালেকশন ডেটা দেখার মোডাল */}
 //       {selectedUserDetail && (
 //         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 //           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-lg space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
@@ -622,65 +666,266 @@
 //         </div>
 //       )}
 
-//       {/* এডিট মোডাল */}
+//       {/* 🛠️ সমস্ত তথ্য এডিট করার অল-ইন-ওয়ান মোডাল (শুধু সাধারণ ইউজার ও এজেন্টদের জন্য) */}
 //       {editingUser && (
-//         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-//           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl">
-//             <h3 className="text-sm font-bold text-white">
-//               ইউজার এডিট:{" "}
-//               <span className="text-emerald-400 font-mono">{editingUser}</span>
-//             </h3>
-//             <div className="space-y-3">
+//         <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+//           <div className="bg-slate-900 border border-slate-800 p-5 rounded-3xl w-full max-w-lg space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+//             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+//               <h3 className="text-sm font-bold text-white flex items-center gap-2">
+//                 <span>✏️</span> ইউজার তথ্য এডিটর:{" "}
+//                 <span className="text-emerald-400 font-mono">
+//                   {editingUser}
+//                 </span>
+//               </h3>
+//               <button
+//                 onClick={() => setEditingUser(null)}
+//                 className="text-slate-400 hover:text-white text-xs"
+//               >
+//                 ✕
+//               </button>
+//             </div>
+
+//             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+//               {/* রোল সিলেক্টর */}
 //               <div>
-//                 <label className="text-xs text-slate-400 block mb-1">
-//                   ব্যালেন্স:
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   রোল (Role):
+//                 </label>
+//                 <select
+//                   value={editFormData.role}
+//                   onChange={(e) =>
+//                     setEditFormData({ ...editFormData, role: e.target.value })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                 >
+//                   <option value="user">USER</option>
+//                   <option value="agent">AGENT</option>
+//                   <option value="admin">ADMIN</option>
+//                 </select>
+//               </div>
+
+//               {/* ভিআইপি লেভেল */}
+//               <div>
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   ভিআইপি লেভেল (VIP Level):
+//                 </label>
+//                 <select
+//                   value={editFormData.vipLevel}
+//                   onChange={(e) =>
+//                     setEditFormData({
+//                       ...editFormData,
+//                       vipLevel: e.target.value,
+//                     })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                 >
+//                   <option value="bronze">BRONZE</option>
+//                   <option value="silver">SILVER</option>
+//                   <option value="gold">GOLD</option>
+//                   <option value="platinum">PLATINUM</option>
+//                   <option value="diamond">DIAMOND</option>
+//                 </select>
+//               </div>
+
+//               {/* প্রধান ব্যালেন্স */}
+//               <div>
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   ব্যালেন্স (৳):
 //                 </label>
 //                 <input
 //                   type="number"
-//                   value={newBalance}
-//                   onChange={(e) => setNewBalance(e.target.value)}
-//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white text-xs font-mono"
+//                   value={editFormData.balance}
+//                   onChange={(e) =>
+//                     setEditFormData({
+//                       ...editFormData,
+//                       balance: e.target.value,
+//                     })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
 //                 />
 //               </div>
+
+//               {/* টার্নওভার */}
 //               <div>
-//                 <label className="text-xs text-slate-400 block mb-1">
-//                   টার্নওভার:
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   টার্নওভার (৳):
 //                 </label>
 //                 <input
 //                   type="number"
-//                   value={newTurnover}
-//                   onChange={(e) => setNewTurnover(e.target.value)}
-//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white text-xs font-mono"
+//                   value={editFormData.turnover}
+//                   onChange={(e) =>
+//                     setEditFormData({
+//                       ...editFormData,
+//                       turnover: e.target.value,
+//                     })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
 //                 />
 //               </div>
+
+//               {/* রেফারেল ব্যালেন্স */}
 //               <div>
-//                 <label className="text-xs text-slate-400 block mb-1">
-//                   আইপি:
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   রেফারেল ব্যালেন্স (৳):
+//                 </label>
+//                 <input
+//                   type="number"
+//                   value={editFormData.referralBalance}
+//                   onChange={(e) =>
+//                     setEditFormData({
+//                       ...editFormData,
+//                       referralBalance: e.target.value,
+//                     })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                 />
+//               </div>
+
+//               {/* আইপি অ্যাড্রেস */}
+//               <div>
+//                 <label className="text-slate-400 block mb-1 font-medium">
+//                   আইপি অ্যাড্রেস:
 //                 </label>
 //                 <input
 //                   type="text"
-//                   value={newIp}
-//                   onChange={(e) => setNewIp(e.target.value)}
-//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white text-xs font-mono"
+//                   value={editFormData.ipAddress}
+//                   onChange={(e) =>
+//                     setEditFormData({
+//                       ...editFormData,
+//                       ipAddress: e.target.value,
+//                     })
+//                   }
+//                   className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
 //                 />
 //               </div>
+
+//               {/* এজেন্ট সম্পর্কিত তথ্য (যদি এজেন্ট হয়) */}
+//               {editFormData.role === "agent" && (
+//                 <>
+//                   <div className="col-span-1 sm:col-span-2 pt-2 border-t border-slate-800">
+//                     <p className="text-teal-400 font-bold mb-2">
+//                       💼 এজেন্ট সংক্রান্ত সেটিংস:
+//                     </p>
+//                   </div>
+
+//                   <div>
+//                     <label className="text-slate-400 block mb-1 font-medium">
+//                       এজেন্ট কোড:
+//                     </label>
+//                     <input
+//                       type="text"
+//                       value={editFormData.agentCode}
+//                       onChange={(e) =>
+//                         setEditFormData({
+//                           ...editFormData,
+//                           agentCode: e.target.value,
+//                         })
+//                       }
+//                       className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-slate-400 block mb-1 font-medium">
+//                       এজেন্ট মেইন ব্যালেন্স (৳):
+//                     </label>
+//                     <input
+//                       type="number"
+//                       value={editFormData.agentMainBalance}
+//                       onChange={(e) =>
+//                         setEditFormData({
+//                           ...editFormData,
+//                           agentMainBalance: e.target.value,
+//                         })
+//                       }
+//                       className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-slate-400 block mb-1 font-medium">
+//                       কমিশন ব্যালেন্স (৳):
+//                     </label>
+//                     <input
+//                       type="number"
+//                       value={editFormData.agentCommissionBalance}
+//                       onChange={(e) =>
+//                         setEditFormData({
+//                           ...editFormData,
+//                           agentCommissionBalance: e.target.value,
+//                         })
+//                       }
+//                       className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-slate-400 block mb-1 font-medium">
+//                       ডিপোজিট কমিশন (%):
+//                     </label>
+//                     <input
+//                       type="number"
+//                       value={editFormData.agentDepositCommission}
+//                       onChange={(e) =>
+//                         setEditFormData({
+//                           ...editFormData,
+//                           agentDepositCommission: e.target.value,
+//                         })
+//                       }
+//                       className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-slate-400 block mb-1 font-medium">
+//                       উইথড্র কমিশন (%):
+//                     </label>
+//                     <input
+//                       type="number"
+//                       value={editFormData.agentWithdrawCommission}
+//                       onChange={(e) =>
+//                         setEditFormData({
+//                           ...editFormData,
+//                           agentWithdrawCommission: e.target.value,
+//                         })
+//                       }
+//                       className="w-full bg-slate-950 border border-slate-700 p-2.5 rounded-xl text-white font-mono"
+//                     />
+//                   </div>
+//                 </>
+//               )}
 //             </div>
-//             <div className="flex gap-2 pt-1">
+
+//             <div className="flex gap-2 pt-3 border-t border-slate-800">
 //               <button
 //                 onClick={() =>
 //                   handleUpdateUser(editingUser, {
-//                     balance: Number(newBalance),
-//                     turnover: Number(newTurnover),
-//                     ipAddress: newIp,
+//                     balance: Number(editFormData.balance),
+//                     turnover: Number(editFormData.turnover),
+//                     ipAddress: editFormData.ipAddress,
+//                     role: editFormData.role,
+//                     vipLevel: editFormData.vipLevel,
+//                     referralBalance: Number(editFormData.referralBalance),
+//                     agentMainBalance: Number(editFormData.agentMainBalance),
+//                     agentCommissionBalance: Number(
+//                       editFormData.agentCommissionBalance,
+//                     ),
+//                     agentDepositCommission: Number(
+//                       editFormData.agentDepositCommission,
+//                     ),
+//                     agentWithdrawCommission: Number(
+//                       editFormData.agentWithdrawCommission,
+//                     ),
+//                     agentCode: editFormData.agentCode,
 //                   })
 //                 }
-//                 className="flex-1 bg-emerald-600 text-white py-2 rounded-xl font-bold text-xs"
+//                 className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95"
 //               >
-//                 আপডেট
+//                 সব সেভ করুন
 //               </button>
 //               <button
 //                 onClick={() => setEditingUser(null)}
-//                 className="flex-1 bg-slate-800 text-slate-300 py-2 rounded-xl font-bold text-xs"
+//                 className="flex-1 bg-slate-800 text-slate-300 py-2.5 rounded-xl font-bold text-xs"
 //               >
 //                 বাতিল
 //               </button>
@@ -729,7 +974,7 @@
 //     </div>
 //   );
 // }
-// ///////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
@@ -777,8 +1022,9 @@ export default function UserManagementSection() {
 
   const fetchData = useCallback(async (search = "") => {
     try {
+      // ✅ ১. লিংক আপডেট করা হয়েছে
       const usersRes = await fetch(
-        `/api/admin/users?search=${search}&t=${Date.now()}`,
+        `/api/admin/manage-users?search=${search}&t=${Date.now()}`,
       );
       const usersData = await usersRes.json();
       if (usersData.success) setUsers(usersData.users);
@@ -832,7 +1078,8 @@ export default function UserManagementSection() {
 
   const performUpdateUser = async (userId, updateData) => {
     try {
-      const res = await fetch("/api/admin/users", {
+      // ✅ ২. লিংক আপডেট করা হয়েছে
+      const res = await fetch("/api/admin/manage-users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...updateData }),
@@ -848,7 +1095,10 @@ export default function UserManagementSection() {
 
   const performDeleteUser = async (userId) => {
     try {
-      await fetch(`/api/admin/users?userId=${userId}`, { method: "DELETE" });
+      // ✅ ৩. লিংক আপডেট করা হয়েছে
+      await fetch(`/api/admin/manage-users?userId=${userId}`, {
+        method: "DELETE",
+      });
       showToast(`ইউজার ${userId} ডিলিট হয়েছে`, "success");
       fetchData(searchQuery);
     } catch (err) {
@@ -1096,7 +1346,7 @@ export default function UserManagementSection() {
                   </button>
 
                   {/* অ্যাডমিন ছাড়া বাকিদের জন্য এডিট, ব্লক এবং ডিলিট চালু থাকবে */}
-                  {u.role !== "admin" ? (
+                  {u.role !== "admin" && (
                     <>
                       <button
                         onClick={() => handleEditClick(u)}
@@ -1119,10 +1369,6 @@ export default function UserManagementSection() {
                         ডিলিট
                       </button>
                     </>
-                  ) : (
-                    <span className="text-[10px] bg-slate-900 text-slate-600 px-2.5 py-1.5 rounded-lg border border-slate-800 font-mono">
-                      সুরক্ষিত অ্যাডমিন
-                    </span>
                   )}
                 </div>
               </div>
@@ -1250,7 +1496,7 @@ export default function UserManagementSection() {
                         </button>
 
                         {/* অ্যাডমিন ছাড়া বাকিদের জন্য এডিট, ব্লক এবং ডিলিট চালু থাকবে */}
-                        {u.role !== "admin" ? (
+                        {u.role !== "admin" && (
                           <>
                             <button
                               onClick={() => handleEditClick(u)}
@@ -1275,10 +1521,6 @@ export default function UserManagementSection() {
                               ডিলিট
                             </button>
                           </>
-                        ) : (
-                          <span className="text-[10px] bg-slate-900 text-slate-600 px-2.5 py-1 rounded-lg border border-slate-800 font-mono">
-                            সুরক্ষিত অ্যাডমিন
-                          </span>
                         )}
                       </div>
                     </td>
