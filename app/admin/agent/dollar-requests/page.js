@@ -301,7 +301,7 @@ export default function DollarRequestsPage() {
                   isPending ? "border-yellow-500/50" : "border-slate-800"
                 }`}
               >
-                <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex-1 min-w-[250px]">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="font-bold text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
